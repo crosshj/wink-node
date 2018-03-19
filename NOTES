@@ -1,0 +1,7 @@
+#consider a different install method besides npm
+http://stackoverflow.com/questions/28382773/install-npm-package-without-dependencies
+
+
+
+# start and stop service
+/etc/init.d/S91homeauto [start|stop]
