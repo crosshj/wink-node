@@ -6,26 +6,43 @@ var port = 8069;
 
 app.use(flatiron.plugins.http);
 
+var routes = [{
+  path: '/options',
+  headers: { 'Content-Type': 'text/plain' },
+  commandArgs: '',
+}, {
+  path: '/devices/all',
+  headers: { 'Content-Type': 'text/plain' },
+  commandArgs: '-l',
+}, {
+  path: '/add/zigbee',
+  headers: { 'Content-Type': 'text/plain' },
+  commandArgs: '-a -r zigbee',
+}];
+
+var routesHtml = routes.reduce(function(all, x){
+  return all + '<p><a href="' + x.path + '">GET: ' + x.path + '</a></p>';
+}, '')
+
 app.router.get('/', function () {
   this.res.writeHead(200, { 'Content-Type': 'text/html' });
-  this.res.end('' +
-    '<p><a href="/options">GET: /options</a></p>' +
-    '<p><a href="/devices/all">GET: /devices/all</a></p>' +
-    '<p>PUT: /devices/</p>' +
-    '<p>GET: /add/zigbee</p>' +
+  this.res.end(routesHtml +
     '<p>GET: /change/:device/:value</p>' +
+    '<p>--- NOT IMPLEMENTED ---</p>' +
+    '<p>PUT: /devices/</p>' +
     '<p>GET: /devices/{deviceId}</p>' +
     '<p>UPDATE: /devices/{deviceId}</p>' +
     '<p>DEL: /devices/{deviceId}</p>' +
   '');
 });
 
-app.router.get('/devices/all', function () {
-  var that = this;
-  exec('aprontest -l', function(error, stdout, stderr) {
-    that.res.writeHead(200, { 'Content-Type': 'text/plain' });
-    that.res.end(stdout);
-    //that.res.end('{"1":' + stdout + '}');
+routes.forEach(function(x) {
+  app.router.get(x.path, function () {
+    var that = this;
+    exec('aprontest ' + x.commandArgs, function(error, stdout, stderr) {
+      that.res.writeHead(200, x.headers);
+      that.res.end(stdout);
+    });
   });
 });
 
@@ -48,23 +65,6 @@ app.router.get('/change/:deviceId/:value', function (deviceId, value) {
     return;
   }
   exec('aprontest -u -m ' + deviceId + ' -t 1 -v OFF', function(error, stdout, stderr) {
-    that.res.writeHead(200, { 'Content-Type': 'text/plain' });
-    that.res.end(stdout);
-  });
-});
-
-//aprontest -a -r zigbee
-app.router.get('/add/zigbee', function () {
-  var that = this;
-  exec('aprontest -a -r zigbee', function(error, stdout, stderr) {
-    that.res.writeHead(200, { 'Content-Type': 'text/plain' });
-    that.res.end(stdout);
-  });
-});
-
-app.router.get('/options', function () {
-  var that = this;
-  exec('aprontest', function(error, stdout, stderr) {
     that.res.writeHead(200, { 'Content-Type': 'text/plain' });
     that.res.end(stdout);
   });
