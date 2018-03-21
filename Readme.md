@@ -1,17 +1,17 @@
 
-#lutron-spy (pico remote)
-/etc/remote-config.json to setup what happens when button is pressed
-/etc/init.d/S59lutron-spy restart
+## lutron-spy (pico remote)
+`/etc/remote-config.json` to setup what happens when button is pressed
+`/etc/init.d/S59lutron-spy restart`
 https://github.com/evq/lutron-spy
 
 
-#consider a different install method besides npm
+## consider a different install method besides npm
 http://stackoverflow.com/questions/28382773/install-npm-package-without-dependencies
 
 
 # start and stop service
-/etc/init.d/S91homeauto [start|stop]
-
+`/etc/init.d/S91homeauto [start|stop]`
+ or create a link like `/usr/bin/homeAuto` and use `homeAuto start|stop|restart`
 
 # start Home Automation Service on Wink startup
 ```
