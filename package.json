@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "flatiron": "^0.4.3",
+    "simple-object-path": "^1.1.0",
     "union": "^0.4.4"
   }
 }
