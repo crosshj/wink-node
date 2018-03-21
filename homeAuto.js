@@ -6,6 +6,8 @@ var port = 8069;
 
 app.use(flatiron.plugins.http);
 
+process.title = 'Home Automation Service';
+
 var routes = [{
   path: '/options',
   headers: { 'Content-Type': 'text/plain' },
@@ -18,6 +20,9 @@ var routes = [{
   path: '/add/zigbee',
   headers: { 'Content-Type': 'text/plain' },
   commandArgs: '-a -r zigbee',
+}, {
+  path: '/rename/:deviceId/:name',
+  commandArgs: '-m {arg} --set-name "{arg}"'
 }];
 
 var routesHtml = routes.reduce(function(all, x){
@@ -39,9 +44,13 @@ app.router.get('/', function () {
 routes.forEach(function(x) {
   app.router.get(x.path, function () {
     var that = this;
-    exec('aprontest ' + x.commandArgs, function(error, stdout, stderr) {
+    var commandArgs = x.commandArgs;
+    arguments.forEach(function(arg, i){
+      commandArgs = commandArgs.replace('{arg}', arguments[i]);
+    });
+    exec('aprontest ' + commandArgs, function(error, stdout, stderr) {
       that.res.writeHead(200, x.headers);
-      that.res.end(stdout);
+      that.res.end(stdout + '\n\n' + commandArgs);
     });
   });
 });
