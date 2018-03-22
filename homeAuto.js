@@ -63,7 +63,10 @@ routes.forEach(function(x) {
     }
     var commandArgs = x.commandArgs;
     [].slice.call(arguments).forEach(function(arg, i){
-      commandArgs = commandArgs.replace('{arg}', (arg+'').replace(/__/g, ' '));
+      const argValue = arg.toLowerCase() === 'on' || arg.toLowerCase() === 'off'
+        ? arg.toUpperCase()
+        : arg;
+      commandArgs = commandArgs.replace('{arg}', (argValue+'').replace(/__/g, ' '));
     });
     exec('aprontest ' + commandArgs, function(error, stdout, stderr) {
       that.res.writeHead(200, x.headers);
