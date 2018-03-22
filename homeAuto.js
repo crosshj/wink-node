@@ -63,7 +63,7 @@ routes.forEach(function(x) {
     }
     var commandArgs = x.commandArgs;
     [].slice.call(arguments).forEach(function(arg, i){
-      const argValue = arg.toLowerCase() === 'on' || arg.toLowerCase() === 'off'
+      const argValue = typeof arg === 'string' && (arg.toLowerCase() === 'on' || arg.toLowerCase() === 'off')
         ? arg.toUpperCase()
         : arg;
       commandArgs = commandArgs.replace('{arg}', (argValue+'').replace(/__/g, ' '));
