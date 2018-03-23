@@ -28,14 +28,33 @@ var routes = [{
   commandArgs: '-a -r zigbee',
 }, {
   path: '/devices/all',
-  headers: { 'Content-Type': 'text/plain' },
-  commandArgs: '-l',
+  headers: { 'Content-Type': 'application/json' },
+  commandArgs: "-l  | awk '/LUTRON \\||ZIGBEE \\|/'",
+  parseOutput: function(output){
+    var result = output
+      .split('\n')
+      .filter(function(x){ return !!x})
+      .map(function(x){
+        var fields = x.split('|');
+        var device = {
+          id: Number(fields[0]),
+          type: fields[1].trim(),
+          name: fields[2].trim()
+        };
+        return device;
+      });
+    return JSON.stringify(result);
+  }
 }, 
 // parameterized routes
 {
   path: '/devices/:deviceId',
   headers: { 'Content-Type': 'text/plain' },
   commandArgs: '-l -m {arg}',
+}, {
+  path: '/refresh/:deviceId',
+  headers: { 'Content-Type': 'text/plain' },
+  commandArgs: '-m {arg} -E',
 }, {
   // double underscore is replaced by space
   path: '/rename/:deviceId/:name',
@@ -69,8 +88,15 @@ routes.forEach(function(x) {
       commandArgs = commandArgs.replace('{arg}', (argValue+'').replace(/__/g, ' '));
     });
     exec('aprontest ' + commandArgs, function(error, stdout, stderr) {
+      //TODO: error case
       that.res.writeHead(200, x.headers);
-      that.res.end(stdout + '\n\n Command Args:' + commandArgs);
+      var output = x.parseOutput
+        ? x.parseOutput(stdout)
+        : stdout;
+      if(x.headers['Content-Type'] !== 'application/json'){
+        output = 'Command: aprontest ' + commandArgs + '\n\n' + output;
+      }
+      that.res.end(output);
     });
   });
 });
