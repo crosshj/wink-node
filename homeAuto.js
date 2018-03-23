@@ -93,7 +93,7 @@ routes.forEach(function(x) {
       var output = x.parseOutput
         ? x.parseOutput(stdout)
         : stdout;
-      if(x.headers['Content-Type'] !== 'application/json'){
+      if(!x.headers || x.headers['Content-Type'] !== 'application/json'){
         output = 'Command: aprontest ' + commandArgs + '\n\n' + output;
       }
       that.res.end(output);
