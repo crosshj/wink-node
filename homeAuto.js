@@ -89,7 +89,9 @@ routes.forEach(function(x) {
     });
     exec('aprontest ' + commandArgs, function(error, stdout, stderr) {
       //TODO: error case
-      that.res.writeHead(200, x.headers);
+      if (x.headers) {
+        that.res.writeHead(200, x.headers);
+      }
       var output = x.parseOutput
         ? x.parseOutput(stdout)
         : stdout;
