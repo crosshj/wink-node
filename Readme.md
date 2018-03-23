@@ -44,3 +44,22 @@ case "${1}" in
       ;;
 esac
 ```
+
+## push to remote machine (because git fails with ssh error)
+```
+#!/bin/sh
+
+# pushes to ubuntu server wink-node dir
+
+usage() {
+        echo usage: `basename $0` '[filename]' 1>&2
+        exit 1
+}
+
+if [ $# -eq 1 ]
+then
+    scp $1 harrison@ubuntu:/home/harrison/repos/wink-node
+else
+    usage
+fi
+```
